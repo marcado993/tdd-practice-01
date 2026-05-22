@@ -51,17 +51,19 @@ class OrderServiceTest {
         product.setStock(5);
         product.setActive(true);
 
-        Order savedOrder = new Order();
-        savedOrder.setId(99L);
-
         when(customerRepository.findByEmail("ana@example.com")).thenReturn(Optional.of(customer));
         when(productRepository.findBySku("SKU-1")).thenReturn(Optional.of(product));
-        when(orderRepository.save(any(Order.class))).thenReturn(savedOrder);
+        when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         Order result = orderService.createOrder("ana@example.com", List.of(new OrderItemRequest("SKU-1", 2)));
 
-        assertSame(savedOrder, result);
+        assertSame(customer, result.getCustomer());
+        assertEquals(OrderStatus.PENDING, result.getStatus());
+        assertEquals(new BigDecimal("25.00"), result.getTotal());
+        assertEquals(1, result.getItems().size());
+        assertEquals(Integer.valueOf(3), product.getStock());
         verify(productRepository).findBySku("SKU-1");
+        verify(productRepository).save(product);
         verify(orderRepository).save(any(Order.class));
     }
 
