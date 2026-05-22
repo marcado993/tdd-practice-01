@@ -27,6 +27,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public boolean hasSufficientStock(String sku, int quantity) {
-        throw new RuntimeException("Not implemented");
+        Product product = findBySku(sku);
+        return product.getStock() != null && product.getStock() >= quantity;
     }
 }
