@@ -16,12 +16,13 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product findBySku(String sku) {
-        throw new RuntimeException("Not implemented");
+        return productRepository.findBySku(sku)
+                .orElseThrow(() -> new RuntimeException("Product not found with sku: " + sku));
     }
 
     @Override
     public List<Product> findActiveProducts() {
-        throw new RuntimeException("Not implemented");
+        return productRepository.findByActiveTrue();
     }
 
     @Override
